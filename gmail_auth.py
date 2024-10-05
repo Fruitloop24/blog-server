@@ -16,7 +16,7 @@ def authenticate_gmail():
         with open('credentials.json', 'w') as file:
             json.dump(credentials_data, file)
 
-        # Use InstalledAppFlow with local server method for Azure
+        # Use InstalledAppFlow with local server method for OAuth
         flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
         credentials = flow.run_local_server(port=0)  # Use local server for OAuth
 
@@ -24,5 +24,6 @@ def authenticate_gmail():
         raise Exception("No credentials provided")
 
     return credentials
+
 
 
