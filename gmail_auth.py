@@ -1,37 +1,38 @@
-# gmail_auth.py
-
 import os
+import json
+from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
 
-# Define paths and constants
-TOKEN_PATH = 'token.json'          # Path to save the user's access and refresh tokens
-CREDENTIALS_PATH = 'credentials.json'  # Path to your client credentials JSON file
+# Get the credentials and token JSON from environment variables
+CREDENTIALS_JSON = os.environ.get("CREDENTIALS_JSON")
+TOKEN_JSON = os.environ.get("TOKEN_JSON")
+
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def authenticate_gmail():
+    if not CREDENTIALS_JSON:
+        raise Exception("No credentials provided")
+
     creds = None
-
-    # Check if token.json exists; if so, use the stored credentials
-    if os.path.exists(TOKEN_PATH):
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
-
-    # If there are no valid credentials, initiate the OAuth flow
+    
+    # If token.json is in the environment, load it
+    if TOKEN_JSON:
+        token = json.loads(TOKEN_JSON)
+        creds = Credentials.from_authorized_user_info(token, SCOPES)
+    
+    # If no (valid) token available, let the user log in and generate a new one
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            # Refresh the credentials
             creds.refresh(Request())
         else:
-            # Run the OAuth flow to get new credentials
-            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
+            creds_info = json.loads(CREDENTIALS_JSON)
+            flow = InstalledAppFlow.from_client_config(creds_info, SCOPES)
             creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open(TOKEN_PATH, 'w') as token_file:
-            token_file.write(creds.to_json())
 
-    # Build the Gmail API service object
-    service = build('gmail', 'v1', credentials=creds)
-    return service
+        # If new credentials were created, save them in the environment
+        token_data = creds.to_json()
+        # You can optionally add code to store token_data back to Azure env variables if needed.
+
+    return creds
 
