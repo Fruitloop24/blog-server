@@ -10,8 +10,8 @@ venv/
 
 # Credentials and sensitive files
 # This will exclude all JSON files. If you want to specifically ignore the two credentials JSONs, replace this with their exact names.
-credentials.json
-token.json
+# credentials.json
+# token.json
 
 # PyCharm project files
 .idea/
