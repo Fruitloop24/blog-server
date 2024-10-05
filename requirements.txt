@@ -1,0 +1,7 @@
+openai
+google-api-python-client
+google-auth
+google-auth-oauthlib
+pymongo
+dnspython
+python-dotenv  # For loading environment variables from a .env file

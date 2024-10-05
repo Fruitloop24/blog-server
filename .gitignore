@@ -1,0 +1,35 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env
+*.env
+
+# Credentials and sensitive files
+# This will exclude all JSON files. If you want to specifically ignore the two credentials JSONs, replace this with their exact names.
+credentials.json
+token.json
+
+# PyCharm project files
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# Ignore any other secrets or local configs
+local_settings.py
