@@ -3,27 +3,38 @@ import json
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from googleapiclient.discovery import build  # Import to create service object
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def authenticate_gmail():
     credentials = None
+    CREDENTIALS_PATH = 'credentials.json'
+    TOKEN_PATH = 'token.json'
 
-    # Check for credentials.json from environment
-    creds_json = os.getenv('GOOGLE_CREDENTIALS')
-    if creds_json:
-        credentials_data = json.loads(creds_json)
-        with open('credentials.json', 'w') as file:
-            json.dump(credentials_data, file)
+    # Check if token.json exists (previously authenticated session)
+    if os.path.exists(TOKEN_PATH):
+        credentials = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
 
-        # Use InstalledAppFlow with local server method for OAuth
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        credentials = flow.run_local_server(port=0)  # Use local server for OAuth
+    # If no valid credentials, do the OAuth flow
+    if not credentials or not credentials.valid:
+        if credentials and credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())  # Refresh the token if it's expired
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
+            credentials = flow.run_local_server(port=0)  # OAuth flow
 
-    else:
-        raise Exception("No credentials provided")
+        # Save the credentials for the next run
+        with open(TOKEN_PATH, 'w') as token:
+            token.write(credentials.to_json())
 
-    return credentials
+    # Build the Gmail service object
+    service = build('gmail', 'v1', credentials=credentials)
+
+    return service  # Return Gmail API service object
+
+
+
 
 
 
