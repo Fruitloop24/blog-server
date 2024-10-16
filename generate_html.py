@@ -212,7 +212,10 @@ def save_html_output(html_content):
         blogdb_blob_service_client = BlobServiceClient.from_connection_string(blogdb_connect_str)
         podfunction_blob_service_client = BlobServiceClient.from_connection_string(podfunction_connect_str)
 
-        # Step 1: Delete the old HTML file from '$web'
+        # Step 1: Archive the old HTML file from '$web' to 'archive' in 'blogdb' container
+        archive_old_html(blogdb_blob_service_client, source_container='$web', archive_container='blogdb')
+
+        # Step 2: Delete the old HTML file from '$web'
         delete_old_html(blogdb_blob_service_client, source_container='$web')
 
         # Step 2: Upload the new HTML to the '$web' container
