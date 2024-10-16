@@ -123,11 +123,11 @@ def get_latest_three_blog_dates():
         # Define your local timezone (example: US/Eastern)
         local_timezone = pytz.timezone('US/Eastern')
 
-        # Get the latest three blobs
-        latest_three = sorted_blobs[:3]
-
         blog_dates = []
-        for blob in latest_three:
+        count = 0
+        for blob in sorted_blobs:
+            if count >= 3:
+                break
             # Construct the URL for each blob
             blob_url = f"https://{container_client.account_name}.blob.core.windows.net/{container_client.container_name}/{blob.name}"
             
@@ -158,7 +158,10 @@ def archive_old_html(blob_service_client, source_container='$web', archive_conta
 
             # Copy the existing file to the archive container with the new name
             archive_blob_client = blob_service_client.get_blob_client(container=archive_container, blob=archive_blob_name)
-            archive_blob_client.start_copy_from_url(blob_client.url)
+            copy = archive_blob_client.start_copy_from_url(blob_client.url)
+            while copy['copy_status'] == 'pending':
+                time.sleep(1)
+                copy = archive_blob_client.get_blob_properties().copy
             print(f"Old file copied to '{archive_blob_name}'.")
 
     except Exception as e:
@@ -205,13 +208,10 @@ def save_html_output(html_content):
         # Step 1: Archive the old HTML file from '$web' to 'archive' in 'blogdb' container
         archive_old_html(blogdb_blob_service_client, source_container='$web', archive_container='blogdb')
 
-        # Step 2: Delete the old HTML file from '$web' container
-        delete_old_html(blogdb_blob_service_client, source_container='$web')
-
-        # Step 3: Upload the new HTML to the '$web' container
+        # Step 2: Upload the new HTML to the '$web' container
         upload_new_html(blogdb_blob_service_client, html_content)
 
-        # Step 4: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
+        # Step 3: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
         pod_prep_container = 'pod-prep'
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         pod_prep_blob_name = f'newsletter_summary_{timestamp}.html'
