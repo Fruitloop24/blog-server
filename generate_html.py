@@ -116,8 +116,8 @@ def get_latest_three_blog_dates():
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
         container_client = blob_service_client.get_container_client('blogdb')
 
-        # List all blobs in the 'archive' directory and sort them by last_modified (newest first)
-        blobs = container_client.list_blobs(name_starts_with='archive/')
+        # List all blobs in the container and sort them by last_modified (newest first)
+        blobs = container_client.list_blobs()
         sorted_blobs = sorted(blobs, key=lambda b: b.last_modified, reverse=True)
 
         # Define your local timezone (example: US/Eastern)
@@ -139,7 +139,7 @@ def get_latest_three_blog_dates():
             # Append the formatted date and blob URL to the list
             blog_dates.append((formatted_date_str, blob_url))
 
-        return blog_dates
+        return blog_dates[:3]  # Return only the last three blogs if available
 
     except Exception as e:
         # Print error message if any exception occurs
@@ -205,8 +205,8 @@ def save_html_output(html_content):
         blogdb_blob_service_client = BlobServiceClient.from_connection_string(blogdb_connect_str)
         podfunction_blob_service_client = BlobServiceClient.from_connection_string(podfunction_connect_str)
 
-        # Step 1: Archive the old HTML file from '$web' to 'archive' in 'blogdb' container
-        archive_old_html(blogdb_blob_service_client, source_container='$web', archive_container='blogdb')
+        # Step 1: Delete the old HTML file from '$web'
+        delete_old_html(blogdb_blob_service_client, source_container='$web')
 
         # Step 2: Upload the new HTML to the '$web' container
         upload_new_html(blogdb_blob_service_client, html_content)
