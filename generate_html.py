@@ -134,7 +134,7 @@ def get_latest_three_blog_dates():
             # Convert UTC to local timezone
             blob_utc_time = blob.last_modified.replace(tzinfo=timezone.utc)
             blob_local_time = blob_utc_time.astimezone(local_timezone)
-            formatted_date_str = blob_local_time.strftime("%B %d, %Y, %I:%M %p")
+            formatted_date_str = blob_local_time.strftime("%B %d, %Y")
 
             # Append the formatted date and blob URL to the list
             blog_dates.append((formatted_date_str, blob_url))
@@ -170,6 +170,9 @@ def archive_old_html(blob_service_client, source_container='$web', archive_conta
             while copy['copy_status'] == 'pending':
                 time.sleep(1)
                 copy = archive_blob_client.get_blob_properties().copy
+
+            # Delete the old HTML file after archiving
+            delete_old_html(blob_service_client, source_container=source_container)
 
     except Exception as e:
         # Print error message if any exception occurs
@@ -219,6 +222,14 @@ def save_html_output(html_content):
         delete_old_html(blogdb_blob_service_client, source_container='$web')
 
         # Step 2: Upload the new HTML to the '$web' container
+        upload_new_html(blogdb_blob_service_client, html_content)
+
+        # Step 3: Upload the new HTML content to the 'pod-display' container in the podfunction storage account
+        pod_display_container = 'pod-display'
+        pod_display_blob_name = 'newsletter_summary.html'
+        pod_display_client = podfunction_blob_service_client.get_blob_client(container=pod_display_container, blob=pod_display_blob_name)
+        pod_display_client.upload_blob(html_content, overwrite=True, content_type='text/html')
+        print(f"New HTML output also uploaded to Azure Blob Storage in container '{pod_display_container}' as '{pod_display_blob_name}'.")
         upload_new_html(blogdb_blob_service_client, html_content)
 
         # Step 3: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
