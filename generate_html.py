@@ -98,8 +98,8 @@ def generate_combined_html(combined_summary, latest_blog_dates):
     # Adding the recent blog section at the bottom of the HTML content
     html_content += '<div id="latest-blogs-container">\n'
     html_content += "<h2>Recent Blogs</h2>\n"
-    for date, name in latest_blog_dates:
-        html_content += f"<div class='latest-blog-item'><a href='{name}' target='_blank'>{date}</a></div>\n"
+    for date, url in latest_blog_dates:
+        html_content += f"<div class='latest-blog-item'><a href='{url}' target='_blank'>{date}</a></div>\n"
 
     html_content += """
         </div>
