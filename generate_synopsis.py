@@ -17,14 +17,14 @@ def generate_individual_synopsis(newsletter_content):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran who provides a concise, humorous, and insightful summary of a newsletter about stocks and AI."
+                    "content": "You are a seasoned IT veteran and storyteller. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI, weaving in humor and insights to captivate the reader."
                 },
                 {
                     "role": "user",
                     "content": newsletter_content
                 }
             ],
-            max_tokens=250,
+            max_tokens=500,
             temperature=0.5,
         )
         synopsis = response.choices[0].message.content.strip()
@@ -45,14 +45,14 @@ def generate_overall_synopsis(synopses):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran who combines multiple summaries into a single, cohesive, and engaging blog post, maintaining a humorous and insightful tone."
+                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post, ensuring it is rich with information, humor, and insights to keep the reader entertained and informed."
                 },
                 {
                     "role": "user",
                     "content": combined_synopses
                 }
             ],
-            max_tokens=750,
+            max_tokens=1000,
             temperature=0.5,
         )
         overall_synopsis = response.choices[0].message.content.strip()
