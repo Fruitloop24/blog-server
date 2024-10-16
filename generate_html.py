@@ -149,59 +149,6 @@ def get_latest_three_blog_dates():
         print(f"Error retrieving blog dates: {e}")
         return []
 
-def archive_old_html(blob_service_client, source_container='$web', archive_container='blogdb'):
-    try:
-        # Get the blob client for the existing HTML file
-        blob_client = blob_service_client.get_blob_client(container=source_container, blob='newsletter_summary.html')
-
-        if blob_client.exists():
-            # Create a timestamp for the archived file name
-            timestamp = time.strftime("%Y%m%d-%H%M%S")
-            archive_blob_name = f'archive/newsletter_summary_{timestamp}.html'
-
-            # Copy the existing file to the archive container with the new name
-            archive_blob_client = blob_service_client.get_blob_client(container=archive_container, blob=archive_blob_name)
-            copy = archive_blob_client.start_copy_from_url(blob_client.url)
-            while copy['copy_status'] == 'pending':
-                time.sleep(1)
-                copy = archive_blob_client.get_blob_properties().copy
-            print(f"Old file copied to '{archive_blob_name}'.")
-            # Ensure the copy operation is complete before proceeding
-            while copy['copy_status'] == 'pending':
-                time.sleep(1)
-                copy = archive_blob_client.get_blob_properties().copy
-
-            # Delete the old HTML file after archiving
-            delete_old_html(blob_service_client, source_container=source_container)
-
-    except Exception as e:
-        # Print error message if any exception occurs
-        print(f"Error archiving the old HTML file: {e}")
-
-def delete_old_html(blob_service_client, source_container='$web'):
-    try:
-        # Get the blob client for the existing HTML file
-        blob_client = blob_service_client.get_blob_client(container=source_container, blob='newsletter_summary.html')
-        if blob_client.exists():
-            # Delete the old HTML file
-            blob_client.delete_blob()
-            print(f"Old newsletter_summary.html deleted from '{source_container}'.")
-    except Exception as e:
-        # Print error message if any exception occurs
-        print(f"Error deleting the old HTML file: {e}")
-
-def upload_new_html(blob_service_client, html_content):
-    try:
-        # Upload the new HTML content to the '$web' container for public access
-        source_container = '$web'
-        blob_name = 'newsletter_summary.html'
-        blob_client = blob_service_client.get_blob_client(container=source_container, blob=blob_name)
-        blob_client.upload_blob(html_content, overwrite=True, content_type='text/html')
-        print(f"New HTML output uploaded to Azure Blob Storage in container '{source_container}' as '{blob_name}'.")
-    except Exception as e:
-        # Print error message if any exception occurs
-        print(f"Error uploading to Blob Storage: {e}")
-
 def save_html_output(html_content):
     try:
         # Get the Azure Storage connection strings from environment variables
