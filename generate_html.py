@@ -139,7 +139,10 @@ def get_latest_three_blog_dates():
             # Append the formatted date and blob URL to the list
             blog_dates.append((formatted_date_str, blob_url))
 
-        return blog_dates[:3]  # Return only the last three blogs if available
+        # Ensure we return exactly three items, even if fewer are available
+        while len(blog_dates) < 3:
+            blog_dates.append(("No recent blog available", "#"))
+        return blog_dates[:3]
 
     except Exception as e:
         # Print error message if any exception occurs
@@ -163,6 +166,10 @@ def archive_old_html(blob_service_client, source_container='$web', archive_conta
                 time.sleep(1)
                 copy = archive_blob_client.get_blob_properties().copy
             print(f"Old file copied to '{archive_blob_name}'.")
+            # Ensure the copy operation is complete before proceeding
+            while copy['copy_status'] == 'pending':
+                time.sleep(1)
+                copy = archive_blob_client.get_blob_properties().copy
 
     except Exception as e:
         # Print error message if any exception occurs
