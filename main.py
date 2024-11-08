@@ -1,8 +1,6 @@
-# main.py
-
 from fetch_newsletters import fetch_newsletters
 from generate_synopsis import generate_individual_synopsis, generate_overall_synopsis
-from generate_html import generate_combined_html, save_html_output
+from generate_html import generate_combined_html, save_html_output, get_latest_three_blog_dates
 
 def main():
     newsletters = fetch_newsletters()
@@ -17,8 +15,12 @@ def main():
             overall_synopsis = generate_overall_synopsis(synopses)
             if overall_synopsis:
                 print(f"Generated overall synopsis:\n{overall_synopsis}\n")
+                
+                # Fetch the latest blog dates
+                latest_blog_dates = get_latest_three_blog_dates()
+
                 # Generate and save the HTML output
-                html_output = generate_combined_html(overall_synopsis)
+                html_output = generate_combined_html(overall_synopsis, latest_blog_dates)
                 save_html_output(html_output)
             else:
                 print("Failed to generate overall synopsis.")

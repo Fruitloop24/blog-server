@@ -39,7 +39,7 @@ def generate_combined_html(combined_summary, latest_blog_dates):
                 margin-bottom: 1rem;
             }}
             p {{
-                font-size: 1.5rem; /* Increased size for blog text */
+                font-size: 1.5rem;
                 margin-bottom: 1rem;
             }}
             #blog-posts-container {{
@@ -62,13 +62,13 @@ def generate_combined_html(combined_summary, latest_blog_dates):
                 margin-top: 40px;
                 padding: 10px;
                 text-align: center;
-                color: #ffcc00; /* Yellow text */
+                color: #ffcc00;
             }}
             .latest-blog-item a {{
-                color: #ffcc00; /* Yellow text for the links */
-                font-size: 1.5rem; /* Match the font size with the rest */
+                color: #ffcc00;
+                font-size: 1.5rem;
                 text-decoration: none;
-                border: 1px dashed #33ff33; /* Pixelated border effect */
+                border: 1px dashed #33ff33;
                 padding: 5px;
                 border-radius: 5px;
                 margin: 0 10px;
@@ -81,7 +81,6 @@ def generate_combined_html(combined_summary, latest_blog_dates):
     <body>
         <h1>Newsletter Summary for {timestamp}</h1>
 
-        <!-- Sources Section -->
         <p>Sources: TLDR, Stocktwits, Google Dev Community</p>
 
         <div id="blog-posts-container">
@@ -162,13 +161,16 @@ def save_html_output(html_content):
         blogdb_blob_service_client = BlobServiceClient.from_connection_string(blogdb_connect_str)
         podfunction_blob_service_client = BlobServiceClient.from_connection_string(podfunction_connect_str)
 
-        # Step 1: Move the old HTML file from '$web' to 'archive' in 'blogdb' container
-        move_old_html(blogdb_blob_service_client, source_container='$web', archive_container='blogdb')
+        # Step 1: Delete the old HTML file from '$web'
+        delete_old_html(blogdb_blob_service_client, source_container='$web')
 
         # Step 2: Upload the new HTML to the '$web' container
         upload_new_html(blogdb_blob_service_client, html_content)
 
-        # Step 3: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
+        # Step 3: Copy the new HTML content to the 'archive' in 'blogdb'
+        copy_new_html_to_archive(blogdb_blob_service_client, html_content)
+
+        # Step 4: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
         pod_prep_container = 'pod-prep'
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         pod_prep_blob_name = f'newsletter_summary_{timestamp}.html'
@@ -179,31 +181,6 @@ def save_html_output(html_content):
     except Exception as e:
         # Print error message if any exception occurs
         print(f"Error processing HTML file: {e}")
-
-def move_old_html(blob_service_client, source_container='$web', archive_container='blogdb'):
-    try:
-        # Get the blob client for the existing HTML file
-        blob_client = blob_service_client.get_blob_client(container=source_container, blob='newsletter_summary.html')
-
-        if blob_client.exists():
-            # Create a timestamp for the archived file name
-            timestamp = time.strftime("%Y%m%d-%H%M%S")
-            archive_blob_name = f'archive/newsletter_summary_{timestamp}.html'
-
-            # Move the existing file to the archive container with the new name
-            archive_blob_client = blob_service_client.get_blob_client(container=archive_container, blob=archive_blob_name)
-            copy = archive_blob_client.start_copy_from_url(blob_client.url)
-            while copy['copy_status'] == 'pending':
-                time.sleep(1)
-                copy = archive_blob_client.get_blob_properties().copy
-            print(f"Old file moved to '{archive_blob_name}'.")
-
-            # Delete the old HTML file from '$web'
-            delete_old_html(blob_service_client, source_container=source_container)
-
-    except Exception as e:
-        # Print error message if any exception occurs
-        print(f"Error moving the old HTML file: {e}")
 
 def delete_old_html(blob_service_client, source_container='$web'):
     try:
@@ -229,4 +206,15 @@ def upload_new_html(blob_service_client, html_content):
         # Print error message if any exception occurs
         print(f"Error uploading to Blob Storage: {e}")
 
+def copy_new_html_to_archive(blob_service_client, html_content):
+    try:
+        # Create a timestamp for the archived file name
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        archive_blob_name = f'archive/newsletter_summary_{timestamp}.html'
 
+        # Upload the new HTML content to the archive container
+        archive_blob_client = blob_service_client.get_blob_client(container='blogdb', blob=archive_blob_name)
+        archive_blob_client.upload_blob(html_content, overwrite=True, content_type='text/html')
+        print(f"New HTML output copied to archive in 'blogdb' container as '{archive_blob_name}'.")
+    except Exception as e:
+        print(f"Error copying HTML to archive: {e}")

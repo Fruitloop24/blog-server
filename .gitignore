@@ -57,3 +57,6 @@ token.json
 
 # Pipenv
 Pipfile.lock
+.aider*
+# .vscode needs to be ignored due to azure functions
+.vscode

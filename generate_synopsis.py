@@ -1,7 +1,6 @@
 # generate_synopsis.py
 
 import os
-from hello import hello
 from openai import OpenAI
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
