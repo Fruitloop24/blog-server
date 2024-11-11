@@ -22,6 +22,24 @@ For a live demonstration of this automation in action, visit **[my website](http
 - Gmail API with OAuth set up
 - OpenAI API key or chosen API key for content generation
 
+# AI-Powered Blog Automation 📝
+
+## Project Overview 🚀
+An automated system that:
+- Fetches newsletters from Gmail
+- Processes content using OpenAI
+- Updates websites via Azure Blob Storage
+- Prepares content for podcast creation
+
+See it in action at https://eportkc.com
+
+flowchart LR
+    A[Gmail API] -->|Fetch Newsletters| B[Python Script]
+    B -->|Process Content| C[OpenAI API]
+    C -->|Generate Blog| D[Azure Blob Storage]
+    D -->|Update Website| E[$web container]
+    D -->|Store for Podcast| F[pod-prep container]
+
 #### **Installation Steps**:
 1. **Clone the Repository**:
    ```bash
