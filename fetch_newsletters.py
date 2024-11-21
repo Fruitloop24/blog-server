@@ -9,8 +9,9 @@ from email.policy import default
 NEWSLETTER_SENDERS = [
     "newsletter@thedailyrip.stocktwits.com",
     "dan@tldrnewsletter.com",
-    "googledev-noreply@google.com"
-]   "info@marketing.stocktwits.com"
+    "googledev-noreply@google.com",
+    "info@marketing.stocktwits.com"
+]
 
 def fetch_newsletters():
     service = authenticate_gmail()
