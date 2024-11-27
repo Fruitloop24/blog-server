@@ -17,7 +17,7 @@ def generate_combined_html(combined_summary, latest_blog_dates):
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Daily Newsletter Summary - {timestamp}</title>
+        <title>Your Daily Tech Digest - {timestamp}</title>
         <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
         <style>
             body {{
@@ -25,6 +25,7 @@ def generate_combined_html(combined_summary, latest_blog_dates):
                 color: #33ff33;
                 font-family: 'VT323', monospace;
                 margin: 20px;
+                line-height: 1.8;
             }}
             h1 {{
                 text-align: center;
@@ -79,11 +80,14 @@ def generate_combined_html(combined_summary, latest_blog_dates):
         </style>
     </head>
     <body>
-        <h1>Newsletter Summary for {timestamp}</h1>
-
-        <p>Sources: TLDR, Stocktwits, Google Dev Community</p>
+        <h1>Your Daily Tech Digest</h1>
+        
+        <p style="text-align: center; font-size: 1.2rem;">Welcome to your personalized tech summary for {timestamp}</p>
+        
+        <p style="text-align: center; color: #ffcc00;">Curated from TLDR, Stocktwits, and Google Dev Community</p>
 
         <div id="blog-posts-container">
+            <p style="color: #ffcc00; font-size: 1.3rem;">Today's Highlights:</p>
     """
 
     # Split the combined summary into paragraphs and add each paragraph to the HTML content
