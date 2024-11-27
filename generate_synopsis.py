@@ -15,8 +15,7 @@ def generate_individual_synopsis(newsletter_content):
             model="gpt-3.5-turbo",
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are a seasoned IT veteran and storyteller. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI, weaving in humor and insights to captivate the reader."
+                    "role": "syst."
                 },
                 {
                     "role": "user",
