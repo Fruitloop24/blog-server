@@ -25,7 +25,7 @@ def generate_combined_html(combined_summary, latest_blog_dates):
                 color: #33ff33;
                 font-family: 'VT323', monospace;
                 margin: 20px;
-                line-height: 1.8;
+                line-height: 1.2;
             }}
             h1 {{
                 text-align: center;
