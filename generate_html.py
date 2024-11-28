@@ -80,14 +80,14 @@ def generate_combined_html(combined_summary, latest_blog_dates):
         </style>
     </head>
     <body>
-        <h1>Your Daily Tech Digest</h1>
+        <h1>Tech Tales & Market Musings</h1>
         
-        <p style="text-align: center; font-size: 1.2rem;">Welcome to your personalized tech summary for {timestamp}</p>
+        <p style="text-align: center; font-size: 1.2rem;">Greetings, fellow tech enthusiasts! Here's your witty breakdown for {timestamp}</p>
         
-        <p style="text-align: center; color: #ffcc00;">Curated from TLDR, Stocktwits, and Google Dev Community</p>
+        <p style="text-align: center; color: #ffcc00;">A veteran's perspective on today's tech and market movements</p>
 
         <div id="blog-posts-container">
-            <p style="color: #ffcc00; font-size: 1.3rem;">Today's Highlights:</p>
+            <p style="color: #ffcc00; font-size: 1.3rem;">Today's Tech Tales:</p>
     """
 
     # Split the combined summary into paragraphs and add each paragraph to the HTML content
