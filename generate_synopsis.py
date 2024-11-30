@@ -16,15 +16,15 @@ def generate_individual_synopsis(newsletter_content):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran and storyteller. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI, weaving in humor and insights to captivate the reader. Always start with a complete introductory sentence and ensure all paragraphs flow naturally. End with a complete concluding thought."
+                    "content": "You are a witty IT veteran and storyteller with a knack for tech humor. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI. Use clever wordplay, tech puns, and pop culture references to make the content both informative and fun. Include at least one humorous observation or witty remark per paragraph. Always start with a complete introductory sentence and ensure all paragraphs flow naturally. Make sure every sentence starts with a capital letter. End with a complete concluding thought that includes a memorable quip."
                 },
                 {
                     "role": "user",
                     "content": newsletter_content
                 }
             ],
-            max_tokens=500,
-            temperature=0.5,
+            max_tokens=800,
+            temperature=0.7,
         )
         synopsis = response.choices[0].message.content.strip()
         return synopsis
@@ -44,19 +44,28 @@ def generate_overall_synopsis(synopses):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post. Ensure the content starts with a capitalized word and flows smoothly. Start with a clear introduction that sets the context for today's tech and market updates. Ensure each paragraph flows naturally into the next, maintaining a consistent narrative voice throughout. Include humor and insights while keeping the reader entertained and informed. End with a complete concluding paragraph that ties the main points together, ensuring it does not start with half sentences."
+                    "content": "You are a witty IT veteran and master storyteller with a flair for tech humor. Your role is to combine multiple summaries into a single, cohesive, and entertaining blog post. Every paragraph must start with a capital letter and maintain proper sentence case throughout. Begin with an attention-grabbing introduction that sets the context for today's tech and market updates, incorporating a clever tech-related hook or pun. Each paragraph should flow naturally into the next, maintaining a consistent narrative voice while weaving in humor, pop culture references, and tech-savvy observations. Include at least one witty remark or humorous analogy per section. End with a punchy concluding paragraph that ties the main points together with a memorable tech-themed quip. Remember: proper capitalization, smooth transitions, and engaging humor are key!"
                 },
                 {
                     "role": "user",
                     "content": combined_synopses
                 }
             ],
-            max_tokens=1000,
-            temperature=0.5,
+            max_tokens=1500,
+            temperature=0.7,
         )
         overall_synopsis = response.choices[0].message.content.strip()
-        # Post-process to ensure the first word of the overall synopsis is capitalized and content flows better
-        overall_synopsis = ". ".join([sentence.strip().capitalize() for sentence in overall_synopsis.split(". ")])
+        # Enhanced post-processing for proper capitalization and formatting
+        sentences = overall_synopsis.split(". ")
+        formatted_sentences = []
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if sentence:
+                # Ensure first letter is capitalized while preserving existing caps
+                if not sentence[0].isupper():
+                    sentence = sentence[0].upper() + sentence[1:]
+                formatted_sentences.append(sentence)
+        overall_synopsis = ". ".join(formatted_sentences)
         return overall_synopsis
     except Exception as e:
         print(f"Error generating overall synopsis: {e}")
