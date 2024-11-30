@@ -10,9 +10,6 @@ def generate_individual_synopsis(newsletter_content):
     if len(newsletter_content) > 3000:
         newsletter_content = newsletter_content[:3000]
     
-    # Preprocess combined_synopses to ensure it starts with a capitalized word
-    combined_synopses = ". ".join([sentence.strip().capitalize() for sentence in combined_synopses.split(". ")])
-
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -41,9 +38,6 @@ def generate_overall_synopsis(synopses):
     if len(combined_synopses) > 8000:
         combined_synopses = combined_synopses[:8000]
     
-    # Preprocess combined_synopses to ensure it starts with a capitalized word
-    combined_synopses = ". ".join([sentence.strip().capitalize() for sentence in combined_synopses.split(". ")])
-
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
