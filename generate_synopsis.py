@@ -16,7 +16,7 @@ def generate_individual_synopsis(newsletter_content):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran and storyteller. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI, weaving in humor and insights to captivate the reader."
+                    "content": "You are a seasoned IT veteran and storyteller. Your task is to provide an engaging, informative, and entertaining summary of a newsletter about stocks and AI, weaving in humor and insights to captivate the reader. Always start with a complete introductory sentence and ensure all paragraphs flow naturally. End with a complete concluding thought."
                 },
                 {
                     "role": "user",
@@ -44,7 +44,7 @@ def generate_overall_synopsis(synopses):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post, ensuring it is rich with information, humor, and insights to keep the reader entertained and informed."
+                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post. Start with a clear introduction that sets the context for today's tech and market updates. Ensure each paragraph flows naturally into the next, maintaining a consistent narrative voice throughout. Include humor and insights while keeping the reader entertained and informed. End with a complete concluding paragraph that ties the main points together."
                 },
                 {
                     "role": "user",
