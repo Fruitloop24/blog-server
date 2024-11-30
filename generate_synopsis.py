@@ -34,7 +34,6 @@ def generate_individual_synopsis(newsletter_content):
 
 def generate_overall_synopsis(synopses):
     combined_synopses = "\n\n".join(synopses)
-    # Ensure the combined synopses do not exceed context length
     if len(combined_synopses) > 8000:
         combined_synopses = combined_synopses[:8000]
     
@@ -44,7 +43,29 @@ def generate_overall_synopsis(synopses):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a witty IT veteran and master storyteller with a flair for tech humor. Your role is to combine multiple summaries into a single, cohesive, and entertaining blog post. Every paragraph must start with a capital letter and maintain proper sentence case throughout. Begin with an attention-grabbing introduction that sets the context for today's tech and market updates, incorporating a clever tech-related hook or pun. Each paragraph should flow naturally into the next, maintaining a consistent narrative voice while weaving in humor, pop culture references, and tech-savvy observations. Include at least one witty remark or humorous analogy per section. End with a punchy concluding paragraph that ties the main points together with a memorable tech-themed quip. Remember: proper capitalization, smooth transitions, and engaging humor are key!"
+                    "content": """You are a witty IT veteran and master storyteller with a flair for tech humor. Your role is to create an engaging tech newsletter synopsis with the following requirements:
+
+Structure:
+- Start with a compelling headline that includes the most significant news item
+- Begin with a strong hook that ties into current tech trends
+- Organize content into 3-4 clear sections with smooth transitions
+- End with an actionable takeaway or forward-looking conclusion
+
+Content Guidelines:
+- Include specific numbers, statistics, and factual details from the source material
+- Maintain a balance of 70% information to 30% entertainment
+- When mentioning research or discoveries, include key details (e.g., specific percentages, names of organizations)
+- For market updates, cite specific indices and percentage changes
+- Incorporate maximum 2 pop culture references per section to avoid oversaturation
+
+Style Requirements:
+- Use varied sentence structures to maintain engagement
+- Employ tech wordplay that enhances rather than obscures the message
+- Include one thought-provoking question per section
+- Ensure proper capitalization and formatting throughout
+- Keep paragraphs focused and concise (3-4 sentences each)
+
+Remember: The goal is to inform first, entertain second. Each piece of humor should serve to highlight or memorably convey important information."""
                 },
                 {
                     "role": "user",
@@ -55,18 +76,25 @@ def generate_overall_synopsis(synopses):
             temperature=0.7,
         )
         overall_synopsis = response.choices[0].message.content.strip()
-        # Enhanced post-processing for proper capitalization and formatting
-        sentences = overall_synopsis.split(". ")
-        formatted_sentences = []
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if sentence:
-                # Ensure first letter is capitalized while preserving existing caps
-                if not sentence[0].isupper():
-                    sentence = sentence[0].upper() + sentence[1:]
-                formatted_sentences.append(sentence)
-        overall_synopsis = ". ".join(formatted_sentences)
-        return overall_synopsis
+        
+        # Enhanced post-processing
+        paragraphs = overall_synopsis.split('\n')
+        formatted_paragraphs = []
+        for paragraph in paragraphs:
+            if paragraph.strip():
+                # Ensure proper capitalization while preserving acronyms
+                sentences = paragraph.split('. ')
+                formatted_sentences = []
+                for sentence in sentences:
+                    sentence = sentence.strip()
+                    if sentence:
+                        # Skip if sentence starts with an acronym
+                        if not (len(sentence) >= 2 and sentence[0:2].isupper()):
+                            sentence = sentence[0].upper() + sentence[1:]
+                        formatted_sentences.append(sentence)
+                formatted_paragraphs.append('. '.join(formatted_sentences))
+        
+        return '\n\n'.join(formatted_paragraphs)
     except Exception as e:
         print(f"Error generating overall synopsis: {e}")
         return None
