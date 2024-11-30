@@ -10,6 +10,9 @@ def generate_individual_synopsis(newsletter_content):
     if len(newsletter_content) > 3000:
         newsletter_content = newsletter_content[:3000]
     
+    # Preprocess combined_synopses to ensure it starts with a capitalized word
+    combined_synopses = ". ".join([sentence.strip().capitalize() for sentence in combined_synopses.split(". ")])
+
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -38,13 +41,16 @@ def generate_overall_synopsis(synopses):
     if len(combined_synopses) > 8000:
         combined_synopses = combined_synopses[:8000]
     
+    # Preprocess combined_synopses to ensure it starts with a capitalized word
+    combined_synopses = ". ".join([sentence.strip().capitalize() for sentence in combined_synopses.split(". ")])
+
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post. Start with a clear introduction that sets the context for today's tech and market updates. Ensure each paragraph flows naturally into the next, maintaining a consistent narrative voice throughout. Include humor and insights while keeping the reader entertained and informed. End with a complete concluding paragraph that ties the main points together."
+                    "content": "You are a seasoned IT veteran and master storyteller. Your role is to combine multiple summaries into a single, cohesive, and engaging blog post. Ensure the content starts with a capitalized word and flows smoothly. Start with a clear introduction that sets the context for today's tech and market updates. Ensure each paragraph flows naturally into the next, maintaining a consistent narrative voice throughout. Include humor and insights while keeping the reader entertained and informed. End with a complete concluding paragraph that ties the main points together, ensuring it does not start with half sentences."
                 },
                 {
                     "role": "user",
@@ -55,6 +61,8 @@ def generate_overall_synopsis(synopses):
             temperature=0.5,
         )
         overall_synopsis = response.choices[0].message.content.strip()
+        # Post-process to ensure the first word of the overall synopsis is capitalized and content flows better
+        overall_synopsis = ". ".join([sentence.strip().capitalize() for sentence in overall_synopsis.split(". ")])
         return overall_synopsis
     except Exception as e:
         print(f"Error generating overall synopsis: {e}")
