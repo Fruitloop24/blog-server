@@ -59,4 +59,3 @@ def generate_overall_synopsis(synopses):
     except Exception as e:
         print(f"Error generating overall synopsis: {e}")
         return None
-
