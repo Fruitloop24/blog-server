@@ -174,13 +174,6 @@ def save_html_output(html_content):
         # Step 3: Copy the new HTML content to the 'archive' in 'blogdb'
         copy_new_html_to_archive(blogdb_blob_service_client, html_content)
 
-        # Step 4: Upload the new HTML content to the 'pod-prep' container in the podfunction storage account
-        pod_prep_container = 'pod-prep'
-        timestamp = time.strftime("%Y%m%d-%H%M%S")
-        pod_prep_blob_name = f'newsletter_summary_{timestamp}.html'
-        pod_prep_client = podfunction_blob_service_client.get_blob_client(container=pod_prep_container, blob=pod_prep_blob_name)
-        pod_prep_client.upload_blob(html_content, overwrite=True, content_type='text/html')
-        print(f"New HTML output also uploaded to Azure Blob Storage in container '{pod_prep_container}' as '{pod_prep_blob_name}'.")
 
     except Exception as e:
         # Print error message if any exception occurs
